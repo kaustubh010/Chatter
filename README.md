@@ -1,107 +1,118 @@
 
-# Project Title
+# Real-time Chat Application
 
-A brief description of what this project does and who it's for
-
+A real-time chat application built with React Native (Expo) for the frontend and Express.js + Socket.IO for the backend.
+This project demonstrates user authentication, live messaging, and seamless real-time updates between connected clients.
 
 ## Demo
 
-Insert gif or link to demo
-
-
+[![🎥 Watch the Demo Video](https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 ## Screenshots
 
-![App Screenshot](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
-
+| Login | Register | Home | Chat |
+|-------|---------|------|------|
+| ![Login](https://placehold.co/150x266?text=Login&font=roboto) | ![Register](https://placehold.co/150x266?text=Register&font=roboto) | ![Home](https://placehold.co/150x266?text=Home&font=roboto) | ![Chat](https://placehold.co/150x266?text=Chat&font=roboto) |
 
 ## Features
 
-- Light/dark mode toggle
-- Live previews
-- Fullscreen mode
-- Cross platform
+- 📱 **Cross-platform mobile app** with React Native (Expo)
+- ⚡ **Realtime messaging** powered by Socket.IO
+- 🔐 **Authentication** system
+- 📡 **Express** backend with API + **WebSocket** support
+- 🖼️ **Clean** and **modern** UI
 
 
 ## Installation
 
-Install my-project with npm
+Clone the repository:
 
 ```bash
-  npm install my-project
-  cd my-project
+  git clone https://github.com/kaustubh010/Chat-App.git
+  cd Chat-App
+```
+
+Backend Setup:
+
+```bash
+  cd Backend
+  npm install
+  npm run start
+```
+
+Frontend Setup:
+
+```bash
+  cd Frontend
+  npm install
+  npm expo start
 ```
     
 ## Environment Variables
 
-To run this project, you will need to add the following environment variables to your .env file
+To run this project, you will need to add the following environment variables to your .env file in the Backend Folder.
 
-`API_KEY`
+`JWT_SECRET`
 
-`ANOTHER_API_KEY`
+`MONGODB_URI`
 
+Also specify where the Backend is running in the Frontend constants.js file.
 
-## Run Locally
-
-Clone the project
-
-```bash
-  git clone https://link-to-project
-```
-
-Go to the project directory
-
-```bash
-  cd my-project
-```
-
-Install dependencies
-
-```bash
-  npm install
-```
-
-Start the server
-
-```bash
-  npm run start
-```
-
+`BACKEND_URL`
 
 ## API Reference
 
-#### Get all items
+#### Get current user info
 
 ```http
-  GET /api/items
+  GET /auth/me
 ```
 
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| `api_key` | `string` | **Required**. Your API key |
-
-#### Get item
+#### Get all users with chat information
 
 ```http
-  GET /api/items/${id}
+  GET /auth/users
+```
+
+#### Register new user
+
+```http
+  POST /auth/register
+```
+
+#### Login new user
+
+```http
+  POST /auth/login
+```
+
+#### Get all messages between current user and another user
+
+```http
+  GET /message/:otherUserId
 ```
 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
+| `currentUserId`      | `string` | **Required**. Id of the current user |
 
-#### add(num1, num2)
+#### Mark messages as read
 
-Takes two numbers and returns the sum.
+```http
+  POST /message/:otherUserId/mark-read
+```
 
+| Parameter | Type     | Description                       |
+| :-------- | :------- | :-------------------------------- |
+| `currentUserId`      | `string` | **Required**. Id of the current user |
 
 ## Tech Stack
 
-**Client:** React, Redux, TailwindCSS
+**Frontend:** React-Native, Expo
 
-**Server:** Node, Express
+**Backend:** Node, Express, Socket.io, mongodb
 
 
-## Authors
+## Author
 
-- [@octokatherine](https://www.github.com/octokatherine)
+- [@kaustubh010](https://www.github.com/kaustubh010)
 
