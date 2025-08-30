@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -30,48 +30,70 @@ export default function ChatScreen({ route, navigation }) {
     setTyping,
     conversations,
     markMessagesAsRead,
+    markMessageAsRead,
+    messages, // Direct access to messages state
   } = useChat();
 
   const user = getUser(userId);
 
-  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [text, setText] = useState("");
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const convo = useMemo(
     () => conversations.find((c) => c.userId === userId),
     [conversations, userId]
   );
 
+  // Get real-time messages directly from context state
+  const currentMessages = messages[userId] || [];
+
   useEffect(() => {
     navigation.setOptions({ headerShown: false });
   }, [navigation]);
 
-  // Fetch messages
+  // Initial message loading
   useEffect(() => {
     let isMounted = true;
-    setLoading(true);
 
-    getMessages(userId)
-      .then((res) => {
+    const loadInitialMessages = async () => {
+      if (isInitialized) return;
+      
+      setLoading(true);
+      try {
+        await getMessages(userId);
         if (isMounted) {
-          setMessages(res);
+          setIsInitialized(true);
           setLoading(false);
         }
-      })
-      .catch(() => setLoading(false));
+      } catch (error) {
+        console.error("Error loading messages:", error);
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadInitialMessages();
 
     return () => {
       isMounted = false;
     };
-  }, [userId, getMessages]);
+  }, [userId, getMessages, isInitialized]);
 
-  // Mark messages as read when the user opens the chat
+  // Mark messages as read when user opens chat or when new unread messages arrive
   useEffect(() => {
     if (convo && convo.unreadCount > 0) {
       markMessagesAsRead(userId);
+      
+      // Mark individual messages as read via socket for real-time tick updates
+      currentMessages
+        .filter(msg => msg.from._id === userId && !msg.read)
+        .forEach(msg => {
+          markMessageAsRead(msg._id, msg.from._id);
+        });
     }
-  }, [userId, convo?.unreadCount, markMessagesAsRead]);
+  }, [userId, convo?.unreadCount, markMessagesAsRead, markMessageAsRead, currentMessages]);
 
   const onChange = (e) => {
     setText(e);
@@ -123,7 +145,7 @@ export default function ChatScreen({ route, navigation }) {
           </View>
         ) : (
           <FlatList
-            data={[...messages].reverse()}
+            data={[...currentMessages].reverse()}
             keyExtractor={(item) => item._id}
             inverted
             renderItem={({ item }) => (

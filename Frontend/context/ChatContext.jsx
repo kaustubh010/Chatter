@@ -19,7 +19,10 @@ export const ChatProvider = ({ children }) => {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [typingUsers, setTypingUsers] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [messages, setMessages] = useState({}); // Store messages in state for real-time updates
+  const [messageUpdateTrigger, setMessageUpdateTrigger] = useState(0); // Force re-renders
   const messagesRef = useRef({});
+  const messageListeners = useRef(new Set()); // Track active listeners
 
   // Initialize data
   useEffect(() => {
@@ -71,11 +74,17 @@ export const ChatProvider = ({ children }) => {
           ? message.to._id
           : message.from._id;
 
-      // Add the new message to the messages array
+      // Add the new message to the ref cache
       messagesRef.current[otherUserId] = [
         ...(messagesRef.current[otherUserId] || []),
         message,
       ];
+
+      // Update messages state for real-time updates - create new array reference
+      setMessages((prev) => ({
+        ...prev,
+        [otherUserId]: [...messagesRef.current[otherUserId]]
+      }));
 
       // Update conversation
       setConversations((prev) =>
@@ -109,6 +118,12 @@ export const ChatProvider = ({ children }) => {
         const lastMessage = messages[messages.length - 1];
         if (lastMessage && lastMessage.text === message.text) {
           messages[messages.length - 1] = message;
+          
+          // Update state to reflect the change
+          setMessages((prev) => ({
+            ...prev,
+            [otherUserId]: [...messagesRef.current[otherUserId]]
+          }));
         }
       }
     });
@@ -155,6 +170,31 @@ export const ChatProvider = ({ children }) => {
       );
     });
 
+    // Listen for message read events
+    socketService.onMessageRead((data) => {
+      // Update the specific message's read status in both ref and state
+      Object.keys(messagesRef.current).forEach((userId) => {
+        if (messagesRef.current[userId]) {
+          messagesRef.current[userId] = messagesRef.current[userId].map((msg) =>
+            msg._id === data.messageId ? { ...msg, read: true } : msg
+          );
+        }
+      });
+
+      // Trigger state update for real-time UI updates
+      setMessages((prev) => {
+        const updated = { ...prev };
+        Object.keys(updated).forEach((userId) => {
+          if (updated[userId]) {
+            updated[userId] = updated[userId].map((msg) =>
+              msg._id === data.messageId ? { ...msg, read: true } : msg
+            );
+          }
+        });
+        return updated;
+      });
+    });
+
     return () => {
       socketService.removeAllListeners();
     };
@@ -196,6 +236,12 @@ export const ChatProvider = ({ children }) => {
         message,
       ];
 
+      // Update messages state for real-time UI update
+      setMessages((prev) => ({
+        ...prev,
+        [userId]: [...(messagesRef.current[userId] || [])]
+      }));
+
       setConversations((prev) =>
         prev.map((c) =>
           c.userId === userId
@@ -221,6 +267,11 @@ export const ChatProvider = ({ children }) => {
         0,
         -1
       );
+      // Also update state to remove failed message
+      setMessages((prev) => ({
+        ...prev,
+        [userId]: [...(messagesRef.current[userId] || [])]
+      }));
     }
   };
 
@@ -259,12 +310,33 @@ export const ChatProvider = ({ children }) => {
       try {
         const messages = await apiService.getMessages(userId);
         messagesRef.current[userId] = messages;
+        
+        // Also update state for real-time UI
+        setMessages((prev) => ({
+          ...prev,
+          [userId]: [...messages]
+        }));
       } catch (err) {
         console.error("Error fetching messages:", err);
         messagesRef.current[userId] = [];
+        setMessages((prev) => ({
+          ...prev,
+          [userId]: []
+        }));
       }
     }
     return messagesRef.current[userId];
+  };
+
+  // Get real-time messages for UI
+  const getRealtimeMessages = (userId) => {
+    return messages[userId] || messagesRef.current[userId] || [];
+  };
+
+  // Mark individual message as read via socket
+  const markMessageAsRead = (messageId, fromUserId) => {
+    if (!currentUser) return;
+    socketService.markMessageAsRead(messageId, fromUserId);
   };
 
   const value = useMemo(
@@ -273,14 +345,17 @@ export const ChatProvider = ({ children }) => {
       conversations,
       onlineUsers,
       typingUsers,
+      messages,
       getMessages,
+      getRealtimeMessages,
       sendMessage,
       setTyping,
       getUser,
       markMessagesAsRead,
+      markMessageAsRead,
       isLoading,
     }),
-    [users, conversations, onlineUsers, typingUsers, isLoading]
+    [users, conversations, onlineUsers, typingUsers, messages, isLoading]
   );
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
