@@ -7,11 +7,12 @@ This project demonstrates user authentication, live messaging, and seamless real
 ## Demo
 
 [![🎥 Watch the Demo Video](https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+
 ## Screenshots
 
 | Login | Register | Home | Chat |
 |-------|---------|------|------|
-| ![Login](https://placehold.co/150x266?text=Login&font=roboto) | ![Register](https://placehold.co/150x266?text=Register&font=roboto) | ![Home](https://placehold.co/150x266?text=Home&font=roboto) | ![Chat](https://placehold.co/150x266?text=Chat&font=roboto) |
+| ![Login](screenshots/login.png) | ![Register](screenshots/register.png) | ![Home](screenshots/home.png) | ![Chat](screenshots/chat.png) |
 
 ## Features
 
