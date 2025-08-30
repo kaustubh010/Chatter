@@ -12,9 +12,7 @@ import { AuthContext } from "./AuthContext";
 
 const ChatContext = createContext();
 
-export const ChatProvider = ({
-  children,
-}) => {
+export const ChatProvider = ({ children }) => {
   const { user: currentUser, token } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [conversations, setConversations] = useState([]);
@@ -38,22 +36,22 @@ export const ChatProvider = ({
     const initializeData = async () => {
       try {
         setIsLoading(true);
-        
+
         // Fetch users and their conversation data
         const usersData = await apiService.getUsers();
         setUsers(usersData);
 
         // Convert users to conversations
-        const convos = usersData.map(user => ({
+        const convos = usersData.map((user) => ({
           userId: user._id,
           latestMessage: user.latestMessage || null,
           unreadCount: user.unreadCount || 0,
-          typing: false
+          typing: false,
         }));
-        
+
         setConversations(convos);
       } catch (error) {
-        console.error('Error initializing chat data:', error);
+        console.error("Error initializing chat data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -68,23 +66,29 @@ export const ChatProvider = ({
 
     // Listen for new messages
     socketService.onNewMessage((message) => {
-      const otherUserId = message.from._id === currentUser._id ? message.to._id : message.from._id;
+      const otherUserId =
+        message.from._id === currentUser._id
+          ? message.to._id
+          : message.from._id;
 
       // Add the new message to the messages array
       messagesRef.current[otherUserId] = [
         ...(messagesRef.current[otherUserId] || []),
-        message
+        message,
       ];
-      
+
       // Update conversation
-      setConversations(prev => 
-        prev.map(conv => {
+      setConversations((prev) =>
+        prev.map((conv) => {
           if (conv.userId === otherUserId) {
             return {
               ...conv,
               latestMessage: message,
-              unreadCount: message.from._id !== currentUser._id ? conv.unreadCount + 1 : conv.unreadCount,
-              typing: false
+              unreadCount:
+                message.from._id !== currentUser._id
+                  ? conv.unreadCount + 1
+                  : conv.unreadCount,
+              typing: false,
             };
           }
           return conv;
@@ -94,8 +98,11 @@ export const ChatProvider = ({
 
     // Listen for message confirmation
     socketService.onMessageSent((message) => {
-      const otherUserId = message.from._id === currentUser._id ? message.to._id : message.from._id;
-      
+      const otherUserId =
+        message.from._id === currentUser._id
+          ? message.to._id
+          : message.from._id;
+
       // Update message in cache with server-generated ID
       if (messagesRef.current[otherUserId]) {
         const messages = messagesRef.current[otherUserId];
@@ -108,22 +115,22 @@ export const ChatProvider = ({
 
     // Listen for user online/offline status
     socketService.onUserOnline((userId) => {
-      setOnlineUsers(prev => new Set([...prev, userId]));
-      setUsers(prev => 
-        prev.map(user => 
+      setOnlineUsers((prev) => new Set([...prev, userId]));
+      setUsers((prev) =>
+        prev.map((user) =>
           user._id === userId ? { ...user, isOnline: true } : user
         )
       );
     });
 
     socketService.onUserOffline((userId) => {
-      setOnlineUsers(prev => {
+      setOnlineUsers((prev) => {
         const newSet = new Set(prev);
         newSet.delete(userId);
         return newSet;
       });
-      setUsers(prev => 
-        prev.map(user => 
+      setUsers((prev) =>
+        prev.map((user) =>
           user._id === userId ? { ...user, isOnline: false } : user
         )
       );
@@ -131,18 +138,18 @@ export const ChatProvider = ({
 
     // Listen for typing events
     socketService.onTypingStart((data) => {
-      setTypingUsers(prev => ({ ...prev, [data.from]: true }));
-      setConversations(prev => 
-        prev.map(conv => 
+      setTypingUsers((prev) => ({ ...prev, [data.from]: true }));
+      setConversations((prev) =>
+        prev.map((conv) =>
           conv.userId === data.from ? { ...conv, typing: true } : conv
         )
       );
     });
 
     socketService.onTypingStop((data) => {
-      setTypingUsers(prev => ({ ...prev, [data.from]: false }));
-      setConversations(prev => 
-        prev.map(conv => 
+      setTypingUsers((prev) => ({ ...prev, [data.from]: false }));
+      setConversations((prev) =>
+        prev.map((conv) =>
           conv.userId === data.from ? { ...conv, typing: false } : conv
         )
       );
@@ -157,23 +164,23 @@ export const ChatProvider = ({
 
   const setTyping = (userId, typing) => {
     if (!currentUser) return;
-    
+
     if (typing) {
       socketService.startTyping({
         from: currentUser._id,
-        to: userId
+        to: userId,
       });
     } else {
       socketService.stopTyping({
         from: currentUser._id,
-        to: userId
+        to: userId,
       });
     }
   };
 
   const sendMessage = async (userId, text) => {
     if (!currentUser) return;
-    
+
     try {
       const message = {
         _id: Math.random().toString(36).slice(2),
@@ -181,73 +188,81 @@ export const ChatProvider = ({
         createdAt: new Date(),
         from: { _id: currentUser._id, name: currentUser.name },
         to: { _id: userId, name: getUser(userId)?.name },
-        read: false
+        read: false,
       };
-      
+
       messagesRef.current[userId] = [
         ...(messagesRef.current[userId] || []),
-        message
+        message,
       ];
-      
-      setConversations(prev =>
-        prev.map(c =>
+
+      setConversations((prev) =>
+        prev.map((c) =>
           c.userId === userId
             ? {
                 ...c,
                 latestMessage: message,
                 typing: false,
-                unreadCount: 0
+                unreadCount: 0,
               }
             : c
         )
       );
-      
+
       // send message through socket
       socketService.sendMessage({
         from: currentUser._id,
         to: userId,
-        text
+        text,
       });
     } catch (error) {
-      console.error('Error sending message:', error);
-      messagesRef.current[userId] = (messagesRef.current[userId] || []).slice(0, -1);
+      console.error("Error sending message:", error);
+      messagesRef.current[userId] = (messagesRef.current[userId] || []).slice(
+        0,
+        -1
+      );
     }
   };
 
   const markMessagesAsRead = async (userId) => {
     if (!currentUser) return;
-    
+
     try {
       await apiService.markMessagesAsRead(userId);
-      
+
       // Update conversations state
-      setConversations(prev =>
-        prev.map(conv =>
+      setConversations((prev) =>
+        prev.map((conv) =>
           conv.userId === userId ? { ...conv, unreadCount: 0 } : conv
         )
       );
     } catch (error) {
-      console.error('Error marking messages as read:', error);
+      console.error("Error marking messages as read:", error);
     }
   };
 
   // Load messages for a user
   const loadMessages = async (userId) => {
     if (!currentUser || messagesRef.current[userId]) return;
-    
+
     try {
       const messages = await apiService.getMessages(userId);
       messagesRef.current[userId] = messages;
     } catch (error) {
-      console.error('Error loading messages:', error);
+      console.error("Error loading messages:", error);
     }
   };
 
   // Get messages
-  const getMessages = (userId) => {
+  const getMessages = async (userId) => {
     if (!messagesRef.current[userId]) {
-      loadMessages(userId);
-      return [];
+      try {
+        const messages = await apiService.getMessages(userId);
+        messagesRef.current[userId] = messages;
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+        messagesRef.current[userId] = [];
+      }
     }
     return messagesRef.current[userId];
   };

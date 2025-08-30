@@ -27,17 +27,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 16,
-    maxWidth: "75%", // fit-to-text, capped
+    maxWidth: "75%",
   },
   me: {
-    backgroundColor: "#0A84FF", // blue
+    backgroundColor: "#0A84FF",
     borderTopRightRadius: 4,
-    alignSelf: "flex-end", // alignment handled here
+    alignSelf: "flex-end",
   },
   other: {
-    backgroundColor: "#E5E5EA", // light gray
+    backgroundColor: "#E5E5EA",
     borderTopLeftRadius: 4,
-    alignSelf: "flex-start", // alignment handled here
+    alignSelf: "flex-start",
   },
   meText: {
     color: "#fff",

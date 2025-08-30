@@ -23,7 +23,7 @@ export default function HomeScreen({ navigation }) {
     navigation.replace("Login");
   };
 
-  // Sorted conversations list
+  // Sort conversations list
   const data = useMemo(
     () => {
       const usersWithConversations = users.map(user => {

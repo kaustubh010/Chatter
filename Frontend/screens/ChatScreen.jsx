@@ -52,18 +52,14 @@ export default function ChatScreen({ route, navigation }) {
     let isMounted = true;
     setLoading(true);
 
-    const data = getMessages(userId);
-    if (data instanceof Promise) {
-      data.then((res) => {
+    getMessages(userId)
+      .then((res) => {
         if (isMounted) {
           setMessages(res);
           setLoading(false);
         }
-      }).catch(() => setLoading(false));
-    } else {
-      setMessages(data);
-      setLoading(false);
-    }
+      })
+      .catch(() => setLoading(false));
 
     return () => {
       isMounted = false;
@@ -120,7 +116,9 @@ export default function ChatScreen({ route, navigation }) {
         keyboardVerticalOffset={10}
       >
         {loading ? (
-          <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+          <View
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          >
             <ActivityIndicator size="large" color={Colors.primary} />
           </View>
         ) : (
@@ -134,10 +132,24 @@ export default function ChatScreen({ route, navigation }) {
                 currentUserId={currentUser?._id ?? ""}
               />
             )}
-            contentContainerStyle={{ paddingBottom: 8, paddingTop: 12 }}
+            contentContainerStyle={{
+              flexGrow: 1,
+              justifyContent: "center",
+              paddingBottom: 8,
+              paddingTop: 12,
+            }}
             style={styles.list}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
+            ListEmptyComponent={
+              !loading && (
+                <View style={styles.emptyContainer}>
+                  <Text style={styles.emptyText}>
+                    No messages yet. Start the conversation 👋
+                  </Text>
+                </View>
+              )
+            }
           />
         )}
 
@@ -192,4 +204,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   typingText: { color: Colors.primary, fontSize: 12, fontWeight: "600" },
+  emptyContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 25,
+    fontWeight: "600",
+    color: Colors.textLight,
+    textAlign: "center",
+  },
 });
