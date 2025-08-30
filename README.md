@@ -73,13 +73,13 @@ Also specify where the Backend is running in the Frontend constants.js file.
   GET /auth/users
 ```
 
-#### Register new user
+#### Register user
 
 ```http
   POST /auth/register
 ```
 
-#### Login new user
+#### Login user
 
 ```http
   POST /auth/login
@@ -93,7 +93,7 @@ Also specify where the Backend is running in the Frontend constants.js file.
 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
-| `currentUserId`      | `string` | **Required**. Id of the current user |
+| `currentUserId`      | `string` | Id of the current user |
 
 #### Mark messages as read
 
@@ -103,7 +103,7 @@ Also specify where the Backend is running in the Frontend constants.js file.
 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
-| `currentUserId`      | `string` | **Required**. Id of the current user |
+| `currentUserId`      | `string` | Id of the current user |
 
 ## Tech Stack
 
