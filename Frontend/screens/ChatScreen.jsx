@@ -156,7 +156,6 @@ export default function ChatScreen({ route, navigation }) {
             )}
             contentContainerStyle={{
               flexGrow: 1,
-              justifyContent: "center",
               paddingBottom: 8,
               paddingTop: 12,
             }}

@@ -1,1 +1,1 @@
-export const BACKEND_URL="https://too-false-incurred-nw.trycloudflare.com"
+export const BACKEND_URL="http://192.168.56.1:5000"
