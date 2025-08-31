@@ -6,7 +6,7 @@ This project demonstrates user authentication, live messaging, and seamless real
 
 ## Demo
 
-[![🎥 Watch the Demo Video](https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg)](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[![🎥 Watch the Demo Video](https://img.youtube.com/vi/7CfUTtmJ0wg/maxresdefault.jpg)](https://www.youtube.com/watch?v=7CfUTtmJ0wg)
 
 ## Screenshots
 
@@ -28,8 +28,8 @@ This project demonstrates user authentication, live messaging, and seamless real
 Clone the repository:
 
 ```bash
-  git clone https://github.com/kaustubh010/Chat-App.git
-  cd Chat-App
+  git clone https://github.com/kaustubh010/RealTime-Chat-Application.git
+  cd RealTime-Chat-Application
 ```
 
 Backend Setup:
