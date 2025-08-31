@@ -10,9 +10,9 @@ This project demonstrates user authentication, live messaging, and seamless real
 
 ## Screenshots
 
-| Login | Register | Home | Chat |
+| Home | Chat | Login | Register |
 |-------|---------|------|------|
-| ![Login](screenshots/login.png) | ![Register](screenshots/register.png) | ![Home](screenshots/home.png) | ![Chat](screenshots/chat.png) |
+| ![Home](screenshots/home.png) | ![Chat](screenshots/chat.png) | ![Login](screenshots/login.png) | ![Register](screenshots/register.png) |
 
 ## Features
 
