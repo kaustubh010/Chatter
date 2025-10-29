@@ -4,6 +4,18 @@
 A real-time chat application built with React Native (Expo) for the frontend and Express.js + Socket.IO for the backend.
 This project demonstrates user authentication, live messaging, and seamless real-time updates between connected clients.
 
+---
+
+## 📱 Try It Yourself
+
+You can download and test the app on your Android device:
+
+👉 [**Download Chatter v1.0 APK**](https://github.com/kaustubh010/Chatter/releases/latest/download/Chatter-v1.0.apk)
+
+> Note: The backend is hosted on **Render (Free Tier)** and uses **MongoDB Atlas (Free Cluster)**, so there may be a few seconds of delay when the server wakes up after inactivity.
+
+---
+
 ## Demo
 
 [![🎥 Watch the Demo Video](https://img.youtube.com/vi/7CfUTtmJ0wg/maxresdefault.jpg)](https://www.youtube.com/watch?v=7CfUTtmJ0wg)
