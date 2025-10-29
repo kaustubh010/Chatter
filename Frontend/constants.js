@@ -1,1 +1,1 @@
-export const BACKEND_URL="http://192.168.56.1:5000"
+export const BACKEND_URL="your_backend_url_here";
