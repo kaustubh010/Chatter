@@ -1,5 +1,5 @@
 
-# Real-time Chat Application
+# 💬 Chatter — Real-time Chat Application
 
 A real-time chat application built with React Native (Expo) for the frontend and Express.js + Socket.IO for the backend.
 This project demonstrates user authentication, live messaging, and seamless real-time updates between connected clients.
